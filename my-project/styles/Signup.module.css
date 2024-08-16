@@ -1,0 +1,179 @@
+/* Signup.module.css */
+
+/* Container for the signup form */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+  
+  /* Header section */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the children horizontally */
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    width: 224px;
+    height: 50px;
+    top: 83px;
+    left: 321px;
+    gap: 0px;
+    opacity: 0px;
+  }
+  
+  .header p {
+    font-size: 12px;
+    color: #000000;
+    font-weight: 500;
+  }
+  
+  /* Content section */
+  .content {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  }
+  
+  .content h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: 22px;
+    margin-left: 42px;
+  }
+  
+  .content p {
+    color: #5C5C5C;
+    margin-bottom: 44px;
+    font-Weight:500;
+    font-Size:12px;
+    line-height:22.5px;
+    text-align: justify;
+  }
+ .content .newParagraph {
+    margin-top: 20px;
+    font-size: 15px;
+    color:#5C5C5C;
+    font-weight: 500;
+    text-align: justify;
+    line-height: 1.5;
+}
+  /* Form section */
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+  }
+  
+  .input {
+    padding: 12px;
+    border: 1px solid #5C5C5C;
+    border-radius: 8px; /* Rounded corners */
+    font-size: 14px;
+    width: 100%; /* Ensure full width */
+    box-sizing: border-box; /* Include padding in the width calculation */
+  }
+  
+  .passwordRequirements {
+    font-size: 12px;
+    color: #999999;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+  
+  .signupButton,
+  .googleButton {
+    padding: 12px;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%; /* Ensure full width */
+    box-sizing: border-box; /* Include padding in the width calculation */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .signupButton {
+    padding: 12px;
+    border: none;
+    border-radius: 8px; /* Rounded corners */
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%; /* Ensure full width */
+    box-sizing: border-box; /* Include padding in the width calculation */
+    background-color: #01747d;
+    color: #ffffff;
+  }
+  
+  .googleButton {
+    padding: 0px;
+    border: 1px solid #000; /* Black border */
+    border-radius: 8px; /* Rounded corners */
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%; /* Ensure full width */
+    box-sizing: border-box; /* Include padding in the width calculation */
+    background-color: #ffffff; /* White background */
+    color: #5C5C5C; /* Black text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+  }
+  
+  .googleButton img {
+    width: 47px;
+    height: 47px;
+  }
+
+  .boldText {
+    font-weight: bold;
+}
+  /* Footer section */
+  .footer {
+    font-size: 12px;
+    color: #999999;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .footer a {
+    color: #007BFF;
+  }
+  
+  .footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 375px) {
+
+    .content h2{
+      margin-left: 12px;
+      font-size: 20px;
+    }
+  }
+  @media (max-width: 360px) {
+
+      .content h2 {
+          font-size: 19px;
+      }
+  }
+  @media (max-width: 412px) {
+    
+    .content h2 {
+        font-size: 19px;
+        margin-left: 12px;
+    }
+  
+  }
