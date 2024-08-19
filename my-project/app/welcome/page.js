@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DotsNavigation from '../../components/DotsNavigation'
 
@@ -14,6 +14,22 @@ const Welcome = () => {
   const [timezone, setTimezone] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Fetch existing data if userId is present
+  useEffect(() => {
+    if (userId) {
+      fetch(`/api/auth/welcome?userId=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data) {
+            setUsername(data.username || '');
+            setFullName(data.fullName || '');
+            setTimezone(data.timezone || '');
+          }
+        })
+        .catch(error => console.error('Error fetching welcome data:', error));
+    }
+  }, [userId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +52,9 @@ const Welcome = () => {
 
       if (response.ok) {
         setSuccess('Welcome data updated successfully');
-        router.push('/connect-calendar'); // Redirect to the next step
+        setTimeout(() => {
+          router.push('/connect-calendar'); // Redirect to the next step after a short delay
+        }, 500); // 500ms delay to allow success message to be visible
       } else {
         setError(data.error || 'Failed to update welcome data');
       }
@@ -99,11 +117,12 @@ const Welcome = () => {
             </select>
           </div>
           <button
-          onClick={() => router.push('/connect-calendar')}
-          className="w-full py-2 sm:py-2 mt-3 sm:mt-4 text-white bg-teal-600 rounded-lg text-sm sm:text-sm"> {/* Adjusted margin-top */}
-          Next Step <span className="ml-2 text-lg sm:text-xl">→</span>
-        </button>
-          <div class="flex space-x-2 mt-2">
+            type="submit"
+            className="w-full py-2 mt-3 text-white bg-teal-600 rounded-lg text-sm">
+            Next Step <span className="ml-2 text-lg">→</span>
+          </button>
+          <div className="flex space-x-2 mt-4">
+            {/* You can add additional content or components here */}
           </div>
         </form>
         <DotsNavigation currentStep={0} totalSteps={5} />

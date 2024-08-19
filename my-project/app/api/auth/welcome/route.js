@@ -8,26 +8,31 @@ export async function POST(req) {
   }
 
   try {
-    // Convert userId to integer
-    const userIdInt = parseInt(userId, 10);
+    // Convert userId to string
+    const userIdString = userId.toString();
 
-    if (isNaN(userIdInt)) {
-      return new Response(JSON.stringify({ error: 'Invalid userId' }), { status: 400 });
+    // Find existing welcome data
+    const existingWelcomeData = await prisma.welcomeData.findFirst({
+      where: { userId: userIdString }
+    });
+
+    if (existingWelcomeData) {
+      // If welcome data exists, update it
+      await prisma.welcomeData.update({
+        where: { id: existingWelcomeData.id },
+        data: { username, fullName, timezone }
+      });
+    } else {
+      // If welcome data does not exist, create it
+      await prisma.welcomeData.create({
+        data: { userId: userIdString, username, fullName, timezone }
+      });
     }
 
-    // Update user and related data
+    // Update the user record
     await prisma.user.update({
-      where: { id: userIdInt },
-      data: {
-        username,
-        welcomeData: {
-          upsert: {
-            where: { userId: userIdInt },
-            update: { username, fullName, timezone },
-            create: { username, fullName, timezone }
-          }
-        }
-      }
+      where: { id: userIdString },
+      data: { username }
     });
 
     return new Response(JSON.stringify({ message: 'Welcome data updated successfully' }), { status: 200 });
