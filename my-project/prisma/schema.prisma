@@ -4,17 +4,19 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
   username      String        @unique
   email         String        @unique
   password      String
@@ -23,18 +25,17 @@ model User {
   welcomeData   WelcomeData[]
 }
 
-
 model PasswordReset {
-  id        Int      @id @default(autoincrement())
-  userId    Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
   token     String   @unique
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id])
 }
 
 model WelcomeData {
-  id         Int      @id @default(autoincrement())
-  userId     Int      
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String
   username   String
   fullName   String?
   timezone   String?
