@@ -11,9 +11,13 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@googleapis/calendar": "^9.7.9",
     "@prisma/client": "^5.18.0",
+    "axios": "^1.7.4",
     "bcrypt": "^5.1.1",
     "emailjs-com": "^3.2.0",
+    "firebase": "^10.13.0",
+    "googleapis": "^142.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
     "next": "^14.2.5",
