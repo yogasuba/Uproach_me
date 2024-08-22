@@ -9,7 +9,9 @@ const ConnectCalendar = () => {
   const [connected, setConnected] = useState(Array(7).fill(false));
 
   const handleConnect = async (index) => {
-    if (index === 5) { // Assuming Google Calendar is the 6th in the list
+    if (index === 0) { // Assuming Lark Calendar is the 1st in the list
+      window.location.href = '/api/auth/lark'; // Directly redirect instead of using fetch
+    } else if (index === 5) { // Google Calendar
       const res = await fetch('/api/google');
       const { url } = await res.json();
       window.location.href = url;
@@ -22,6 +24,8 @@ const ConnectCalendar = () => {
       });
     }
   };
+  
+  
 
   const calendars = [
     { src: '/icons/lark-calendar.png', alt: 'Lark Calendar', label: 'Lark Calendar' },
