@@ -6,15 +6,26 @@ import DotsNavigation from '../../components/DotsNavigation';
 
 const ConnectCalendar = () => {
   const router = useRouter();
-  const [connected, setConnected] = useState(Array(7).fill(false));
+  const [connected, setConnected] = useState(Array(8).fill(false)); // Update array size
+  const [showAppleModal, setShowAppleModal] = useState(false);
+  const [appleCredentials, setAppleCredentials] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   const handleConnect = async (index) => {
-    if (index === 0) { // Assuming Lark Calendar is the 1st in the list
-      window.location.href = '/api/auth/lark'; // Directly redirect instead of using fetch
+    if (index === 0) { // Lark Calendar
+      window.location.href = '/api/auth/lark';
+    } else if (index === 1 || index === 2) { // Microsoft Exchange 2013 or 2016
+      handleExchangeConnect(index);
     } else if (index === 5) { // Google Calendar
       const res = await fetch('/api/google');
       const { url } = await res.json();
       window.location.href = url;
+    } else if (index === 4) { // Apple Calendar
+      setShowAppleModal(true);
+    } else if (index === 6) { // Exchange Calendar
+      handleExchangeConnect();
+    } else if (index === 3) { // Outlook Calendar
+      handleOutlookConnect();
     } else {
       // Handle other calendar connections here
       setConnected((prev) => {
@@ -24,8 +35,95 @@ const ConnectCalendar = () => {
       });
     }
   };
-  
-  
+
+  const handleAppleConnect = async () => {
+    setLoading(true);
+    try {
+      const userId = 'unique-user-id'; // Replace with actual user ID
+      const response = await fetch('/api/apple', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: appleCredentials.email,
+          appSpecificPassword: appleCredentials.password,
+          userId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setConnected((prev) => {
+          const newConnected = [...prev];
+          newConnected[4] = true;
+          return newConnected;
+        });
+        setShowAppleModal(false);
+        setAppleCredentials({ email: '', password: '' });
+        alert('Apple Calendar connected successfully!');
+      } else {
+        alert('Failed to connect to Apple Calendar: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error connecting to Apple Calendar:', error);
+      alert('An error occurred while connecting to Apple Calendar.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExchangeConnect = async (version) => {
+    setLoading(true);
+    try {
+      const userEmail = prompt('Enter your Exchange email address:');
+      
+      if (!userEmail) {
+        alert('Email address is required to connect to Exchange Calendar.');
+        return;
+      }
+
+      const response = await fetch('/api/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, version }) // Sending the email and version to the API
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setConnected((prev) => {
+          const newConnected = [...prev];
+          newConnected[version] = true; // Mark the corresponding version as connected
+          return newConnected;
+        });
+        alert('Exchange Calendar connected successfully!');
+      } else {
+        alert('Failed to connect to Exchange Calendar: ' + (data.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error connecting to Exchange Calendar:', error);
+      alert('An error occurred while connecting to Exchange Calendar.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOutlookConnect = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/outlook');
+      if (!response.ok) {
+        throw new Error('Failed to fetch Outlook connection URL');
+      }
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Error connecting to Outlook Calendar:', error);
+      alert('An error occurred while connecting to Outlook Calendar.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const calendars = [
     { src: '/icons/lark-calendar.png', alt: 'Lark Calendar', label: 'Lark Calendar' },
@@ -56,7 +154,7 @@ const ConnectCalendar = () => {
               <button
                 onClick={() => handleConnect(index)}
                 className={`ml-auto px-2 sm:px-3 py-1 sm:py-1 text-xs sm:text-xs rounded-lg ${
-                  connected[index] ? 'bg-teal-600 text-white' : 'bg-white text-teal-600'
+                  connected[index] ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border border-teal-600'
                 }`}
               >
                 {connected[index] ? 'Connected' : 'Connect'}
@@ -73,6 +171,49 @@ const ConnectCalendar = () => {
           <DotsNavigation currentStep={1} totalSteps={5} />
         </div>
       </div>
+
+      {showAppleModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-lg font-semibold mb-4">Connect to Apple Calendar</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Apple ID Email</label>
+              <input
+                type="email"
+                className="w-full border border-gray-300 rounded-md p-2"
+                value={appleCredentials.email}
+                onChange={(e) => setAppleCredentials({ ...appleCredentials, email: e.target.value })}
+                placeholder="your-email@icloud.com"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">App-Specific Password</label>
+              <input
+                type="password"
+                className="w-full border border-gray-300 rounded-md p-2"
+                value={appleCredentials.password}
+                onChange={(e) => setAppleCredentials({ ...appleCredentials, password: e.target.value })}
+                placeholder="************"
+              />
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowAppleModal(false)}
+                className="px-4 py-2 mr-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAppleConnect}
+                className="px-4 py-2 text-sm text-white bg-teal-600 rounded-md hover:bg-teal-700"
+                disabled={loading}
+              >
+                {loading ? 'Connecting...' : 'Connect'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import DotsNavigation from '../../components/DotsNavigation'
+import DotsNavigation from '../../components/DotsNavigation';
 
 const Welcome = () => {
   const router = useRouter();
@@ -19,15 +19,22 @@ const Welcome = () => {
   useEffect(() => {
     if (userId) {
       fetch(`/api/auth/welcome?userId=${userId}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data) {
-            setUsername(data.username || '');
-            setFullName(data.fullName || '');
-            setTimezone(data.timezone || '');
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch welcome data');
           }
+          return response.json();
         })
-        .catch(error => console.error('Error fetching welcome data:', error));
+        .then(data => {
+          console.log('Fetched data:', data); // Debug: Check the fetched data
+          setUsername(data.username || ''); // Auto-fill username
+          setFullName(data.fullName || '');
+          setTimezone(data.timezone || '');
+        })
+        .catch(error => {
+          console.error('Error fetching welcome data:', error);
+          setError('Error fetching welcome data');
+        });
     }
   }, [userId]);
 
@@ -52,6 +59,7 @@ const Welcome = () => {
 
       if (response.ok) {
         setSuccess('Welcome data updated successfully');
+        setError(''); // Clear any previous error
         setTimeout(() => {
           router.push('/connect-calendar'); // Redirect to the next step after a short delay
         }, 500); // 500ms delay to allow success message to be visible
@@ -83,7 +91,7 @@ const Welcome = () => {
               id="username"
               placeholder="Enter your username"
               className="w-full p-3 border border-gray-400 rounded-lg text-sm"
-              value={username}
+              value={username} // Automatically filled from fetched data
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
@@ -118,7 +126,8 @@ const Welcome = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-2 mt-3 text-white bg-teal-600 rounded-lg text-sm">
+            className="w-full py-2 mt-3 text-white bg-teal-600 rounded-lg text-sm"
+          >
             Next Step <span className="ml-2 text-lg">→</span>
           </button>
           <div className="flex space-x-2 mt-4">
