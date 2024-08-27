@@ -2,18 +2,26 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DotsNavigation from '../../components/DotsNavigation'; // Adjust path if necessary
+import DotsNavigation from '../../components/DotsNavigation';
 
 const ConnectVideo = () => {
   const router = useRouter();
-  const [connected, setConnected] = useState(Array(7).fill(false)); // Array to manage connection state for each video app
+  const [connected, setConnected] = useState(Array(7).fill(false));
 
-  const handleConnect = (index) => {
-    setConnected((prev) => {
-      const newConnected = [...prev];
-      newConnected[index] = !newConnected[index];
-      return newConnected;
-    });
+  const handleConnect = async (index) => {
+    if (index === 0) { // Whereby is the first app in your array
+      window.location.href = '/api/connect/whereby'; // This will trigger the OAuth flow
+    } else if (index === 1) { // Around is the second app in your array
+      window.location.href = '/api/auth/around-connect';
+    } else if (index === 6) {
+      window.location.href = '/api/connect/webex'; // This will trigger the OAuth flow for Around
+    } else {
+      setConnected((prev) => {
+        const newConnected = [...prev];
+        newConnected[index] = !newConnected[index];
+        return newConnected;
+      });
+    }
   };
 
   const videoApps = [
@@ -37,10 +45,10 @@ const ConnectVideo = () => {
         </p>
       </header>
       <div className="w-full max-w-xs sm:max-w-md p-2 sm:p-4 bg-white rounded-lg shadow-md">
-        <ul className="space-y-1 sm:space-y-2"> {/* Further reduced vertical spacing */}
+        <ul className="space-y-1 sm:space-y-2">
           {videoApps.map(({ src, alt, label }, index) => (
-            <li key={alt} className="flex items-center p-2 bg-gray-100 rounded-lg"> {/* Further reduced padding */}
-              <img src={src} alt={alt} className="h-6 w-6 sm:h-5 sm:w-5" /> {/* Adjusted icon size */}
+            <li key={alt} className="flex items-center p-2 bg-gray-100 rounded-lg">
+              <img src={src} alt={alt} className="h-6 w-6 sm:h-5 sm:w-5" />
               <span className="ml-3 sm:ml-4 sm:text-xs text-gray-700 font-semibold text-sm">{label}</span>
               <button
                 onClick={() => handleConnect(index)}
@@ -54,12 +62,12 @@ const ConnectVideo = () => {
           ))}
         </ul>
         <button
-          onClick={() => router.push('/setavailability')} // Change the path to the next step as required
-          className="w-full py-2 sm:py-2 mt-3 sm:mt-4 text-white bg-teal-600 rounded-lg text-sm sm:text-sm"> {/* Adjusted margin-top */}
+          onClick={() => router.push('/setavailability')}
+          className="w-full py-2 sm:py-2 mt-3 sm:mt-4 text-white bg-teal-600 rounded-lg text-sm sm:text-sm">
           Next Step <span className="ml-2 text-lg sm:text-xl">→</span>
         </button>
-        <div className="mt-4"> {/* Added margin-top for dots */}
-          <DotsNavigation currentStep={2} totalSteps={5} /> {/* This is the third step */}
+        <div className="mt-4">
+          <DotsNavigation currentStep={2} totalSteps={5} />
         </div>
       </div>
     </div>
