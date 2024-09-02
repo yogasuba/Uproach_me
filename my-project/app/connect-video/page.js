@@ -9,12 +9,15 @@ const ConnectVideo = () => {
   const [connected, setConnected] = useState(Array(7).fill(false));
 
   const handleConnect = async (index) => {
-    if (index === 0) { // Whereby is the first app in your array
+    if (index === 0) {
       window.location.href = '/api/connect/whereby'; // This will trigger the OAuth flow
-    } else if (index === 1) { // Around is the second app in your array
+    } else if (index === 1) { 
       window.location.href = '/api/auth/around-connect';
-    } else if (index === 6) {
-      window.location.href = '/api/connect/webex'; // This will trigger the OAuth flow for Around
+    } else if (index === 6) {  
+      window.location.href = '/api/connect/webex'; // This will trigger the OAuth flow for Webex
+    } else if (index === 5) { 
+      const contact = 'user@example.com'; // Replace with a real contact or dynamic input
+      window.location.href = `facetime://${contact}`;
     } else {
       setConnected((prev) => {
         const newConnected = [...prev];
