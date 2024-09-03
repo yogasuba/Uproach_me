@@ -1,16 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import DotsNavigation from '../../components/DotsNavigation'; // Adjust path if necessary
+import { useRouter, useSearchParams } from 'next/navigation';
+import DotsNavigation from '../../components/DotsNavigation';
 
 const SetAvailability = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const userId = searchParams.get('userId');
+  
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   const [availability, setAvailability] = useState(
     days.reduce((acc, day) => {
-      acc[day] = { isAvailable: true, timeSlots: [['09:00', '17:00']] }; // Initial time slot
+      acc[day] = { isAvailable: true, timeSlots: [['09:00', '17:00']] };
       return acc;
     }, {})
   );
@@ -72,6 +75,28 @@ const SetAvailability = () => {
     });
   };
 
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('/api/availability', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, availability }),
+      });
+
+      if (response.ok) {
+        // Navigate to the next page
+        router.push(`/setavailability/page2?userId=${userId}`);
+      } else {
+        // Handle error
+        console.error('Failed to save availability');
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-0 bg-gray-100">
       <header className="mt-4 sm:mt-6 mb-4 text-center">
@@ -82,14 +107,13 @@ const SetAvailability = () => {
           Seamlessly sync your calendar for effortless scheduling
         </p>
       </header>
-      <div className="w-full max-w-lg p-4 bg-white rounded-lg shadow-md ">
-        <ul className="space-y-4 ">
+      <div className="w-full max-w-lg p-4 bg-white rounded-lg shadow-md">
+        <ul className="space-y-4">
           {days.map((day) => (
             <li key={day} className="flex items-center bg-gray-100 rounded-lg">
-              <div className="relative inline-block w-10 mr-4 mf-10 align-middle select-none transition duration-200 ease-in">
+              <div className="relative inline-block w-10 mr-4 align-middle select-none transition duration-200 ease-in">
                 <input
                   type="checkbox"
-                  name={`toggle${day}`}
                   id={`toggle${day}`}
                   className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
                   checked={availability[day].isAvailable}
@@ -189,7 +213,7 @@ const SetAvailability = () => {
           ))}
         </ul>
         <button
-          onClick={() => router.push('/setavailability/page2')}
+          onClick={handleSubmit}
           className="w-full py-2 mt-3 text-white bg-teal-600 rounded-lg text-sm"
         >
           Next Step <span className="ml-2 text-lg">→</span>

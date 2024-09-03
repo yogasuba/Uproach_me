@@ -16,19 +16,22 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
-  username      String        @unique
-  email         String        @unique
-  password      String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  username       String           @unique
+  email          String           @unique
+  password       String
+  profilePic     String?       // Add this line
+  about          String?       // Add this line
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   passwordResets PasswordReset[]
-  welcomeData   WelcomeData[] // Relation to WelcomeData model
+  welcomeData    WelcomeData[]
+  availabilities Availability[]
 }
 
 model PasswordReset {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
+  userId    String   @db.ObjectId
   token     String   @unique
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id])
@@ -36,13 +39,25 @@ model PasswordReset {
 
 model WelcomeData {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @unique
+  userId    String   @unique @db.ObjectId
   username  String
   fullName  String
   timezone  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User     @relation(fields: [userId], references: [id]) // Relation with the User model
+  user      User     @relation(fields: [userId], references: [id])
 }
+
+model Availability {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String  @db.ObjectId
+  day         String
+  timeSlots   Json
+  isAvailable Boolean
+  user        User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, day], name: "userId_day")
+}
+
 
