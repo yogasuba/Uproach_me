@@ -1,12 +1,24 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DotsNavigation from '../../components/DotsNavigation';
 
 const ConnectVideo = () => {
   const router = useRouter();
   const [connected, setConnected] = useState(Array(7).fill(false));
+  const [userId, setUserId] = useState(''); // Define userId state
+
+  useEffect(() => {
+    // Retrieve userId from URL query parameters
+    const query = new URLSearchParams(window.location.search);
+    const userIdFromQuery = query.get('userId');
+    if (userIdFromQuery) {
+      setUserId(userIdFromQuery);
+    } else {
+      console.error('User ID is not available in query parameters.');
+    }
+  }, []);
 
   const handleConnect = async (index) => {
     if (index === 0) {
@@ -65,7 +77,7 @@ const ConnectVideo = () => {
           ))}
         </ul>
         <button
-          onClick={() => router.push('/setavailability')}
+          onClick={() => router.push(`/setavailability?userId=${userId}`)}
           className="w-full py-2 sm:py-2 mt-3 sm:mt-4 text-white bg-teal-600 rounded-lg text-sm sm:text-sm">
           Next Step <span className="ml-2 text-lg sm:text-xl">→</span>
         </button>

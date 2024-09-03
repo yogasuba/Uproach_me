@@ -1,12 +1,11 @@
 'use client';
-
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import DotsNavigation from '../../../components/DotsNavigation';
 
 const SetAvailability2 = () => {
   const router = useRouter();
   const [profilePic, setProfilePic] = useState(null);
+  const [about, setAbout] = useState('');
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -16,6 +15,27 @@ const SetAvailability2 = () => {
         setProfilePic(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    const userId = new URLSearchParams(window.location.search).get('userId');
+    const response = await fetch('/api/saveProfile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        profilePic,
+        about,
+      }),
+    });
+
+    if (response.ok) {
+      router.push('/dashboard');
+    } else {
+      console.error('Failed to save profile');
     }
   };
 
@@ -55,27 +75,27 @@ const SetAvailability2 = () => {
           </label>
         </div>
         <div className="mb-2 text-left">
-          {/* Position "About" label outside the text area */}
           <label htmlFor="about" className="text-sm font-semibold text-gray-700">
             About
           </label>
         </div>
         <textarea
           id="about"
+          value={about}
+          onChange={(e) => setAbout(e.target.value)}
           className="w-full p-2 text-sm sm:text-sm bg-gray-100 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-600"
           rows="5"
         ></textarea>
-        {/* Position the description text below the text area */}
-        <p className="text-xs text-gray-500 mt-2"> {/* Adjusted margin-top to create space between textarea and text */}
+        <p className="text-xs text-gray-500 mt-2">
           A few sentences about yourself. This will appear on your personal URL page.
         </p>
         <button
-          onClick={() => router.push('/connectvideo')} // Adjust the path as needed
+          onClick={handleSave}
           className="w-full py-2 sm:py-2 mt-4 sm:mt-4 text-white bg-teal-600 rounded-lg text-sm sm:text-sm">
           Next Step <span className="ml-2 text-lg sm:text-xl">→</span>
         </button>
         <div className="mt-4">
-          <DotsNavigation currentStep={4} totalSteps={5} />
+          {/* Add your DotsNavigation component here */}
         </div>
       </div>
     </div>

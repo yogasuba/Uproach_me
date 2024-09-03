@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DotsNavigation from '../../components/DotsNavigation';
 
@@ -10,6 +10,18 @@ const ConnectCalendar = () => {
   const [showAppleModal, setShowAppleModal] = useState(false);
   const [appleCredentials, setAppleCredentials] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState(''); // Define userId state
+
+  useEffect(() => {
+    // Retrieve userId from URL query parameters
+    const query = new URLSearchParams(window.location.search);
+    const userIdFromQuery = query.get('userId');
+    if (userIdFromQuery) {
+      setUserId(userIdFromQuery);
+    } else {
+      console.error('User ID is not available in query parameters.');
+    }
+  }, []);
 
   const handleConnect = async (index) => {
     if (index === 0) { // Lark Calendar
@@ -39,14 +51,13 @@ const ConnectCalendar = () => {
   const handleAppleConnect = async () => {
     setLoading(true);
     try {
-      const userId = 'unique-user-id'; // Replace with actual user ID
       const response = await fetch('/api/apple', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: appleCredentials.email,
           appSpecificPassword: appleCredentials.password,
-          userId,
+          userId, // Use userId here
         }),
       });
 
@@ -163,7 +174,13 @@ const ConnectCalendar = () => {
           ))}
         </ul>
         <button
-          onClick={() => router.push('/connect-video')}
+          onClick={() => {
+            if (userId) {
+              router.push(`/connect-video?userId=${userId}`);
+            } else {
+              console.error('User ID is not available for redirection.');
+            }
+          }}
           className="w-full py-2 sm:py-2 mt-3 sm:mt-4 text-white bg-teal-600 rounded-lg text-sm sm:text-sm">
           Next Step <span className="ml-2 text-lg sm:text-xl">→</span>
         </button>
@@ -183,7 +200,7 @@ const ConnectCalendar = () => {
                 className="w-full border border-gray-300 rounded-md p-2"
                 value={appleCredentials.email}
                 onChange={(e) => setAppleCredentials({ ...appleCredentials, email: e.target.value })}
-                placeholder="your-email@icloud.com"
+                required
               />
             </div>
             <div className="mb-4">
@@ -193,19 +210,19 @@ const ConnectCalendar = () => {
                 className="w-full border border-gray-300 rounded-md p-2"
                 value={appleCredentials.password}
                 onChange={(e) => setAppleCredentials({ ...appleCredentials, password: e.target.value })}
-                placeholder="************"
+                required
               />
             </div>
             <div className="flex justify-end">
               <button
                 onClick={() => setShowAppleModal(false)}
-                className="px-4 py-2 mr-2 text-sm text-gray-600 hover:text-gray-800"
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 mr-2"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAppleConnect}
-                className="px-4 py-2 text-sm text-white bg-teal-600 rounded-md hover:bg-teal-700"
+                className="px-4 py-2 text-sm text-white bg-teal-600 rounded-lg"
                 disabled={loading}
               >
                 {loading ? 'Connecting...' : 'Connect'}

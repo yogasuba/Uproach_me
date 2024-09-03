@@ -61,7 +61,7 @@ const Welcome = () => {
         setSuccess('Welcome data updated successfully');
         setError(''); // Clear any previous error
         setTimeout(() => {
-          router.push('/connect-calendar'); // Redirect to the next step after a short delay
+          router.push(`/connect-calendar?userId=${userId}`); // Redirect to the next step after a short delay
         }, 500); // 500ms delay to allow success message to be visible
       } else {
         setError(data.error || 'Failed to update welcome data');
